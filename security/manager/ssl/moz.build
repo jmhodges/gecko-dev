@@ -255,9 +255,19 @@ headers_arrays_certs = [
         "content-signature-prod.crt",
     ),
     (
+        "content-signature-prod-intermediate.inc",
+        "contentSignatureProdIntermediate",
+        "content-signature-prod-intermediate.crt",
+    ),
+    (
         "content-signature-stage.inc",
         "contentSignatureStageRoot",
         "content-signature-stage.crt",
+    ),
+    (
+        "content-signature-stage-intermediate.inc",
+        "contentSignatureStageIntermediate",
+        "content-signature-stage-intermediate.crt",
     ),
     # The dev root is the same as the stage root.
     (

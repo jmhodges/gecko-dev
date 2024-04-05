@@ -38,7 +38,9 @@
 #include "content-signature-dev.inc"
 #include "content-signature-local.inc"
 #include "content-signature-prod.inc"
+#include "content-signature-prod-intermediate.inc"
 #include "content-signature-stage.inc"
+#include "content-signature-stage-intermediate.inc"
 
 using namespace mozilla::pkix;
 
@@ -98,6 +100,13 @@ nsresult AppTrustDomain::SetTrustedRoot(AppTrustedRoot trustedRoot) {
     mAddonsIntermediate = {addonsStageIntermediate};
   }
 
+  if (trustedRoot == nsIContentSignatureVerifier::ContentSignatureProdRoot) {
+    mAddonsIntermediate = {contentSignatureProdIntermediate};
+  }
+
+  if (trustedRoot == nsIContentSignatureVerifier::ContentSignatureStageRoot) {
+    mAddonsIntermediate = {contentSignatureStageIntermediate};
+  }
   return NS_OK;
 }
 
