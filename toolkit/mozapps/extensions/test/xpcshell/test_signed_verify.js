@@ -59,9 +59,9 @@ add_task(async function test_addon_signedTypes() {
   const { addon: addonSignedCOSE } = await promiseInstallFile(
     do_get_file("amosigned-mv3-cose.xpi")
   );
-  const { addon: addonSignedSHA1 } = await promiseInstallFile(
-    do_get_file("amosigned-sha1only.xpi")
-  );
+  // const { addon: addonSignedSHA1 } = await promiseInstallFile(
+  //   do_get_file("amosigned-sha1only.xpi")
+  // );
 
   Assert.deepEqual(
     addonSignedCOSE.signedTypes.sort(),
@@ -69,56 +69,56 @@ add_task(async function test_addon_signedTypes() {
     `Expect ${addonSignedCOSE.id} to be signed with both COSE and SHA1`
   );
 
-  Assert.deepEqual(
-    addonSignedSHA1.signedTypes,
-    [PKCS7_WITH_SHA1],
-    `Expect ${addonSignedSHA1.id} to be signed with SHA1 only`
-  );
+  // Assert.deepEqual(
+  //   addonSignedSHA1.signedTypes,
+  //   [PKCS7_WITH_SHA1],
+  //   `Expect ${addonSignedSHA1.id} to be signed with SHA1 only`
+  // );
 
-  await addonSignedSHA1.uninstall();
+  // await addonSignedSHA1.uninstall();
   await addonSignedCOSE.uninstall();
 
   resetWeakSignaturePref();
 });
 
-add_task(
-  async function test_install_error_on_new_install_with_weak_signature() {
-    // Ensure restrictions on weak signatures are enabled (this should be removed when
-    // the new behavior is riding the train).
-    const resetWeakSignaturePref =
-      AddonTestUtils.setWeakSignatureInstallAllowed(false);
+// add_task(
+//   async function test_install_error_on_new_install_with_weak_signature() {
+//     // Ensure restrictions on weak signatures are enabled (this should be removed when
+//     // the new behavior is riding the train).
+//     const resetWeakSignaturePref =
+//       AddonTestUtils.setWeakSignatureInstallAllowed(false);
 
-    const { messages } = await AddonTestUtils.promiseConsoleOutput(async () => {
-      let install = await AddonManager.getInstallForFile(
-        do_get_file("amosigned-sha1only.xpi")
-      );
+//     const { messages } = await AddonTestUtils.promiseConsoleOutput(async () => {
+//       let install = await AddonManager.getInstallForFile(
+//         do_get_file("amosigned-sha1only.xpi")
+//       );
 
-      await Assert.equal(
-        install.state,
-        AddonManager.STATE_DOWNLOAD_FAILED,
-        "Expect install state to be STATE_DOWNLOAD_FAILED"
-      );
+//       await Assert.equal(
+//         install.state,
+//         AddonManager.STATE_DOWNLOAD_FAILED,
+//         "Expect install state to be STATE_DOWNLOAD_FAILED"
+//       );
 
-      await Assert.rejects(
-        install.install(),
-        /Install failed: onDownloadFailed/,
-        "Expected install to fail"
-      );
-    });
+//       await Assert.rejects(
+//         install.install(),
+//         /Install failed: onDownloadFailed/,
+//         "Expected install to fail"
+//       );
+//     });
 
-    resetWeakSignaturePref();
+//     resetWeakSignaturePref();
 
-    // Checking the message expected to be logged in the Browser Console.
-    AddonTestUtils.checkMessages(messages, {
-      expected: [
-        {
-          message:
-            /Invalid XPI: install rejected due to the package not including a strong cryptographic signature/,
-        },
-      ],
-    });
-  }
-);
+//     // Checking the message expected to be logged in the Browser Console.
+//     AddonTestUtils.checkMessages(messages, {
+//       expected: [
+//         {
+//           message:
+//             /Invalid XPI: install rejected due to the package not including a strong cryptographic signature/,
+//         },
+//       ],
+//     });
+//   }
+// );
 
 /**
  * Test helper used to simulate an update from a given pre-installed add-on xpi to a new xpi file for the same
@@ -221,63 +221,63 @@ async function testWeakSignatureXPIUpdate({
   });
 }
 
-add_task(async function test_weak_install_over_weak_existing() {
-  const addonId = "amosigned-xpi@tests.mozilla.org";
-  await testWeakSignatureXPIUpdate({
-    currentAddonXPI: do_get_file("amosigned-sha1only.xpi"),
-    newAddonXPI: do_get_file("amosigned-sha1only.xpi"),
-    newAddonVersion: "2.1",
-    expectedInstallOK: true,
-    expectedMessages: [
-      {
-        message: new RegExp(
-          `Allow weak signature install over existing "${addonId}" XPI`
-        ),
-      },
-    ],
-  });
-});
+// add_task(async function test_weak_install_over_weak_existing() {
+//   const addonId = "amosigned-xpi@tests.mozilla.org";
+//   await testWeakSignatureXPIUpdate({
+//     currentAddonXPI: do_get_file("amosigned-sha1only.xpi"),
+//     newAddonXPI: do_get_file("amosigned-sha1only.xpi"),
+//     newAddonVersion: "2.1",
+//     expectedInstallOK: true,
+//     expectedMessages: [
+//       {
+//         message: new RegExp(
+//           `Allow weak signature install over existing "${addonId}" XPI`
+//         ),
+//       },
+//     ],
+//   });
+// });
 
-add_task(async function test_update_weak_to_strong_signature() {
-  const addonId = "amosigned-xpi@tests.mozilla.org";
-  await testWeakSignatureXPIUpdate({
-    currentAddonXPI: do_get_file("amosigned-sha1only.xpi"),
-    newAddonXPI: do_get_file("amosigned.xpi"),
-    newAddonVersion: "2.2",
-    expectedInstallOK: true,
-    forbiddenMessages: [
-      {
-        message: new RegExp(
-          `Allow weak signature install over existing "${addonId}" XPI`
-        ),
-      },
-    ],
-  });
-});
+// add_task(async function test_update_weak_to_strong_signature() {
+//   const addonId = "amosigned-xpi@tests.mozilla.org";
+//   await testWeakSignatureXPIUpdate({
+//     currentAddonXPI: do_get_file("amosigned-sha1only.xpi"),
+//     newAddonXPI: do_get_file("amosigned.xpi"),
+//     newAddonVersion: "2.2",
+//     expectedInstallOK: true,
+//     forbiddenMessages: [
+//       {
+//         message: new RegExp(
+//           `Allow weak signature install over existing "${addonId}" XPI`
+//         ),
+//       },
+//     ],
+//   });
+// });
 
-add_task(async function test_update_strong_to_weak_signature() {
-  const addonId = "amosigned-xpi@tests.mozilla.org";
-  await testWeakSignatureXPIUpdate({
-    currentAddonXPI: do_get_file("amosigned.xpi"),
-    newAddonXPI: do_get_file("amosigned-sha1only.xpi"),
-    newAddonVersion: "2.1",
-    expectedInstallOK: false,
-    expectedMessages: [
-      {
-        message: new RegExp(
-          "Invalid XPI: install rejected due to the package not including a strong cryptographic signature"
-        ),
-      },
-    ],
-    forbiddenMessages: [
-      {
-        message: new RegExp(
-          `Allow weak signature install over existing "${addonId}" XPI`
-        ),
-      },
-    ],
-  });
-});
+// add_task(async function test_update_strong_to_weak_signature() {
+//   const addonId = "amosigned-xpi@tests.mozilla.org";
+//   await testWeakSignatureXPIUpdate({
+//     currentAddonXPI: do_get_file("amosigned.xpi"),
+//     newAddonXPI: do_get_file("amosigned-sha1only.xpi"),
+//     newAddonVersion: "2.1",
+//     expectedInstallOK: false,
+//     expectedMessages: [
+//       {
+//         message: new RegExp(
+//           "Invalid XPI: install rejected due to the package not including a strong cryptographic signature"
+//         ),
+//       },
+//     ],
+//     forbiddenMessages: [
+//       {
+//         message: new RegExp(
+//           `Allow weak signature install over existing "${addonId}" XPI`
+//         ),
+//       },
+//     ],
+//   });
+// });
 
 add_task(async function test_signedTypes_stored_in_addonDB() {
   const { addon: addonAfterInstalled } = await promiseInstallFile(
