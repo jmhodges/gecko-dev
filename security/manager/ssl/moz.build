@@ -243,7 +243,7 @@ headers_arrays_certs = [
     (
         "addons-public-intermediate.inc",
         "addonsPublicIntermediates",
-        ["addons-public-intermediate.pem"],
+        ["addons-public-intermediate.pem", "addons-202410-intermediate.pem"],
     ),
     ("addons-stage.inc", "addonsStageRoots", ["addons-stage.pem"]),
     (
